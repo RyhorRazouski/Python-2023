@@ -65,10 +65,21 @@ ul li::before {
 <form action="/addtag">
     <label for="name">Tag:</label>
     <input type="text" id="name" name="name" value="Tag"><br>
-    <input class="button button1" type="submit" value="Dodaj !">
+    <input class="button button1" type="submit" value="Dodaj tag!">
 </form>
+
+<hr>
+
+<form action="/addnote">
+    <label for="title">Tytul:</label>
+    <input type="text" id="title" name="title" value="tytul"><br>
+    <label for="body">Tresc:</label>
+    <input type="text" id="body" name="body" value="Tresc"><br>
+    <input class="button button1" type="submit" value="Dodaj notke!">
+</form>
+
 <ul>
-    {% for item in data %}
+    {% for item in tags %}
     <li> {{item}} <a href="/removetag?name={{item.tagname}}">X</a> </li>
     {% else %}
     no items

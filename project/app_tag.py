@@ -23,6 +23,12 @@ class Tag(db.Model):
         return '<Tag %r>' % self.tagname
 
 
+class Note(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(80), unique=True, nullable=False)
+    body = db.Column(db.Text, unique=False, nullable=False)
+
+
 def get_tags(session):
     return session.query(Tag).all()
 
@@ -42,7 +48,7 @@ def create_tag(name, session):
 
 @app.route('/')
 def hello():
-    return render_template('notes.html', data=get_tags(db.session),
+    return render_template('notes.html', notes=get_notes(db.session), tags=get_tags(db.session),
                            tytul="Tags", no_error=True)
 
 
@@ -51,7 +57,7 @@ def route_addtag():
     args = request.args
     create_tag(args["name"], db.session)
 
-    return render_template('notes.html', data=get_tags(db.session),
+    return render_template('notes.html', notes=get_notes(db.session), tags=get_tags(db.session),
                            tytul="Dodano tag")
 
 
@@ -60,11 +66,38 @@ def remove_tag(param, session):
     session.delete(tag)
     session.commit()
 
+
 @app.route('/removetag')
 def route_removetag():
     args = request.args
     remove_tag(args["name"], db.session)
 
-    return render_template('notes.html', data=get_tags(db.session),
+    return render_template('notes.html', notes=get_notes(db.session), tags=get_tags(db.session),
                            tytul="removed tag")
 
+
+def create_note(title, body, session):
+
+    try:
+        note = Note(title=title, body=body)
+        session.add(note)
+        session.commit()
+    except sqlalchemy.exc.IntegrityError as e:
+        print(e)
+        session.rollback()
+        return False
+    else:
+        return True
+
+
+def get_notes(session):
+    return session.query(Note).all()
+
+
+@app.route('/addnote')
+def route_addnote():
+    args = request.args
+    create_note(args["title"], args["body"], db.session)
+
+    return render_template('notes.html', notes=get_notes(db.session), tags=get_tags(db.session),
+                           tytul="Dodano note")
