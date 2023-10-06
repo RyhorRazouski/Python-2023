@@ -52,6 +52,8 @@ ul li::before {
             color: white;
         }
 
+
+
     </style>
 </head>
 <body>
@@ -74,13 +76,15 @@ ul li::before {
     <label for="title">Tytul:</label>
     <input type="text" id="title" name="title" value="tytul"><br>
     <label for="body">Tresc:</label>
-    <input type="text" id="body" name="body" value="Tresc"><br>
+    <textarea rows="4" cols="50" type="text" id="body" name="body" value="Tresc">
+
+    </textarea><br>
     <input class="button button1" type="submit" value="Dodaj notke!">
 </form>
 
 <ul>
     {% for item in tags %}
-    <li> {{item}} <a href="/removetag?name={{item.tagname}}">X</a> </li>
+    <li> {{item}} <a href="/removetag?name={{item.tagname}}">X</a></li>
     {% else %}
     no items
     {% endfor %}
@@ -88,7 +92,17 @@ ul li::before {
 
 <ul>
     {% for item in notes %}
-    <li> {{item.title}} <a href="/removetag?name={{item.title}}">X</a> </li>
+    <li> {{item.title}} {{item.body}}
+        <form action="/applytag" method="POST">
+            <input type="hidden" name="note_id" value="{{item.id}}" />
+            <select name="tag_id" id="tag_id">
+                {% for tag in tags %}
+                <option value="{{ tag.id }}">{{ tag.tagname }}</option>
+                {% endfor %}
+            </select>
+            <input class="button button1" type="submit" value="dodaj tag">
+        </form>
+    </li>
     {% else %}
     no notes
     {% endfor %}

@@ -7,7 +7,7 @@
 from flask import render_template, request
 
 from project.config import db, app
-from project.crud import get_tags, create_tag, remove_tag, create_note, get_notes
+from project.crud import get_tags, create_tag, remove_tag, create_note, get_notes, apply_tag
 
 
 @app.route('/')
@@ -38,6 +38,15 @@ def route_removetag():
 def route_addnote():
     args = request.args
     create_note(args["title"], args["body"], db.session)
+
+    return render_template('notes.html', notes=get_notes(db.session), tags=get_tags(db.session),
+                           tytul="Dodano note")
+
+@app.route('/applytag', methods=["POST"] )
+def route_applytag():
+    args = request.form
+    print(args)
+    apply_tag(session=db.session, note_id=args["note_id"], tag_id=args["tag_id"])
 
     return render_template('notes.html', notes=get_notes(db.session), tags=get_tags(db.session),
                            tytul="Dodano note")

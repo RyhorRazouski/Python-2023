@@ -1,4 +1,5 @@
 import sqlalchemy
+from sqlalchemy.orm import relationship
 
 from project.config import db
 
@@ -16,6 +17,16 @@ class Note(db.Model):
     title = db.Column(db.String(80), unique=True, nullable=False)
     body = db.Column(db.Text, unique=False, nullable=False)
 
+    tags = relationship("Tag",
+                    secondary='tagnote',
+                    uselist=True,
+                    backref='notes',
+                    lazy='select')
+
+class tagnote(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    note_id = db.Column(db.Integer, db.ForeignKey('note.id'))
+    tag_id = db.Column(db.Integer, db.ForeignKey('tag.id'))
 
 def get_tags(session):
     return session.query(Tag).all()
@@ -56,3 +67,9 @@ def create_note(title, body, session):
 
 def get_notes(session):
     return session.query(Note).all()
+
+def apply_tag(session, note_id, tag_id):
+    note = session.query(Note).filter_by(id=note_id).one()
+    tag = session.query(Tag).filter_by(id=tag_id).one()
+    note.tags.append(tag)
+    session.commit()
