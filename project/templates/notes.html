@@ -92,7 +92,7 @@ ul li::before {
 
 <ul>
     {% for item in notes %}
-    <li> {{item.title}} {{item.body}}
+    <li> {{item.title}} {{item.body}} {% for notetag in item.tags %} {{notetag.tagname}} {% endfor %}
         <form action="/applytag" method="POST">
             <input type="hidden" name="note_id" value="{{item.id}}" />
             <select name="tag_id" id="tag_id">
