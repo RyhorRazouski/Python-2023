@@ -86,5 +86,13 @@ ul li::before {
     {% endfor %}
 </ul>
 
+<ul>
+    {% for item in notes %}
+    <li> {{item.title}} <a href="/removetag?name={{item.title}}">X</a> </li>
+    {% else %}
+    no notes
+    {% endfor %}
+</ul>
+
 </body>
 </html>
